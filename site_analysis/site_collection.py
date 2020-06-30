@@ -1,3 +1,9 @@
+from typing import List
+from .site import Site
+from .atom import Atom
+from pymatgen import Structure # type: ignore
+import numpy as np # type: ignore
+
 class SiteCollection(object):
     """Parent class for collections of sites.
 
@@ -8,7 +14,7 @@ class SiteCollection(object):
 
     """
 
-    def __init__(self, sites):
+    def __init__(self, sites: List[Site]) -> None:
         """Create a SiteCollection object.
 
         Args:
@@ -17,7 +23,7 @@ class SiteCollection(object):
         """
         self.sites = sites
 
-    def assign_site_occupations(self, atoms, structure):
+    def assign_site_occupations(self, atoms: List[Atom], structure: Structure) -> None:
         """Assigns atoms to sites for a specific structure.
 
         This method should be implemented in the derived subclass
@@ -38,7 +44,7 @@ class SiteCollection(object):
         raise NotImplementedError('assign_site_occupations should be implemented in'
             ' the derived class')
 
-    def analyse_structure(self, atoms, structure):
+    def analyse_structure(self, atoms: List[Atom], structure: Structure) -> None:
         """Perform a site analysis for a set of atoms on a specific structure.
 
         This method should be implemented in the derived subclass.
@@ -54,7 +60,7 @@ class SiteCollection(object):
         """
         raise NotImplementedError('analyse_structure should be implemented in the derived class')
 
-    def neighbouring_sites(self, site_index):
+    def neighbouring_sites(self, site_index: int) -> List[Site]:
         """If implemented, returns a list of sites that neighbour
         a given site.
 
@@ -63,11 +69,14 @@ class SiteCollection(object):
         Args:
             site_index (int): Index of the site to return a list of neighbours for.
 
+        Returns:
+            (list(Site))
+
         """
         raise NotImplementedError('neighbouring_sites should be implemented'
             'in the derived class')
 
-    def site_by_index(self, index):
+    def site_by_index(self, index: int) -> Site:
         """Returns the site with a specific index.
 
         Args:
@@ -86,7 +95,7 @@ class SiteCollection(object):
                 return site
         raise ValueError(f'No site with index {index} found')
 
-    def update_occupation(self, site, atom):
+    def update_occupation(self, site: Site, atom: Atom) -> None:
         """Updates site and atom attributes for this atom occupying this site.
 
         Args:
@@ -115,7 +124,7 @@ class SiteCollection(object):
         site.points.append(atom.frac_coords)
         atom.in_site = site.index
 
-    def reset_site_occupations(self):
+    def reset_site_occupations(self) -> None:
         """Occupations of all sites in this site collection are set as empty.
 
         Args:
@@ -128,7 +137,7 @@ class SiteCollection(object):
         for s in self.sites:
             s.contains_atoms = []
 
-    def sites_contain_points(self, points):
+    def sites_contain_points(self, points: np.ndarray) -> bool:
         """If implemented, Checks whether the set of sites contain 
         a corresponding set of fractional coordinates.
 

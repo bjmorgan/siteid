@@ -1,9 +1,12 @@
 from .site_collection import SiteCollection
-import numpy as np
+import numpy as np # type: ignore
+from typing import List
+from pymatgen import Structure # type: ignore
+from .atom import Atom
 
 class VoronoiSiteCollection(SiteCollection):
 
-    def analyse_structure(self, atoms, structure):
+    def analyse_structure(self, atoms: List[Atom], structure: Structure) -> None:
         for a in atoms:
             a.assign_coords(structure)
         self.assign_site_occupations(atoms, structure)

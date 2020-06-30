@@ -1,5 +1,5 @@
 from .site_collection import SiteCollection
-import numpy as np
+import numpy as np # type: ignore
 
 class SphericalSiteCollection(SiteCollection):
 

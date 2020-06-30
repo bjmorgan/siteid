@@ -1,5 +1,10 @@
 from collections import Counter
 
+from typing import Optional, List
+from typing import Counter as CounterType
+from site_analysis.atom import Atom
+import numpy as np # type: ignore
+
 class Site(object):
     """Parent class for defining sites.
 
@@ -11,9 +16,9 @@ class Site(object):
         index (int): Numerical ID, intended to be unique to each site.
         label (`str`: optional): Optional string given as a label for this site.
             Default is `None`.
-        contains_atoms (list): List of the atoms contained by this site in the
+        contains_atoms (list): List of atom indices of the atoms contained by this site in the
             structure last processed.
-        trajectory (list): List of sites this atom has visited at each timestep?
+        trajectory (list): Nested list of indices of atoms that have visited this site at each timestep.
         points (list): List of fractional coordinates for atoms assigned as
             occupying this site.
         transitions (collections.Counter): Stores observed transitions from this
@@ -30,7 +35,7 @@ class Site(object):
     # Site._newid can be reset to 0 by calling Site.reset_index()
     # with the default arguments.
     
-    def __init__(self, label=None):
+    def __init__(self, label: Optional[str] = None) -> None:
         """Initialise a Site object.
 
         Args:
@@ -40,15 +45,15 @@ class Site(object):
             None
 
         """
-        self.index = Site._newid
+        self.index: int = Site._newid
         Site._newid += 1
-        self.label = label
-        self.contains_atoms = []
-        self.trajectory = []
-        self.points = []
-        self.transitions = Counter()
+        self.label: Optional[str] = label
+        self.contains_atoms: List[int] = []
+        self.trajectory: List[List[int]] = []
+        self.points: List[np.ndarray] = []
+        self.transitions: CounterType[int]= Counter()
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the trajectory for this site.
 
         Returns the contains_atoms and trajectory attributes
@@ -65,7 +70,7 @@ class Site(object):
         self.trajectory = []
         self.transitions = Counter()
  
-    def contains_point(self, x):
+    def contains_point(self, x: np.ndarray) -> bool:
         """Test whether the fractional coordinate x is contained by this site.
 
         This method should be implemented in the inherited subclass
@@ -83,7 +88,7 @@ class Site(object):
         raise NotImplementedError('contains_point should be implemented '
                                   'in the inherited class')
 
-    def contains_atom(self, atom):
+    def contains_atom(self, atom: Atom) -> bool:
         """Test whether this site contains a specific atom.
 
         Args:
@@ -95,7 +100,7 @@ class Site(object):
         """
         return self.contains_point(atom.frac_coords)
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         """Json-serializable dict representation of this Site.
 
         Args:

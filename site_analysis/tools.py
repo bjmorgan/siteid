@@ -3,9 +3,14 @@
 This module contains tools for 
 
 """
-import numpy as np
+import numpy as np # type: ignore
+from pymatgen import Structure, Site # type: ignore
+from typing import List, Union
 
-def get_nearest_neighbour_indices(structure, ref_structure, vertex_species, n_coord):
+def get_nearest_neighbour_indices(structure: Structure, 
+                                  ref_structure: Structure, 
+                                  vertex_species: List[str], 
+                                  n_coord: int) -> List[List[int]]:
     """
     Returns the atom indices for the N nearest neighbours to each site in a reference
     structure.
@@ -36,7 +41,11 @@ def get_nearest_neighbour_indices(structure, ref_structure, vertex_species, n_co
         nn_indices.append( sorted([ vertex_indices[i] for i in idx[:n_coord] ]) )
     return nn_indices
 
-def get_vertex_indices( structure, centre_species, vertex_species, cutoff=4.5, n_vertices=6 ):
+def get_vertex_indices(structure: Structure, 
+                       centre_species: str, 
+                       vertex_species: Union[str, List[str]], 
+                       cutoff: float = 4.5, 
+                       n_vertices: Union[int, List[int]] = 6) -> List[List[int]]:
     """
     Find the atom indices for atoms defining the vertices of coordination polyhedra, from 
     a pymatgen Structure object.
@@ -78,7 +87,7 @@ def get_vertex_indices( structure, centre_species, vertex_species, cutoff=4.5, n
         vertex_indices.append( atom_indices )
     return vertex_indices
 
-def x_pbc(x):
+def x_pbc(x: np.ndarray) -> np.ndarray:
     """Return an array of fractional coordinates mapped into all positive neighbouring 
     periodic cells.
 
@@ -112,5 +121,5 @@ def x_pbc(x):
                        [1,1,1]]) + x
     return all_x
 
-def species_string_from_site(site):
+def species_string_from_site(site: Site) -> str:
     return [k.__str__() for k in site._species.keys()][0]

@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Union, Optional
 from .site import Site
 from .atom import Atom
 from pymatgen import Structure # type: ignore
 import numpy as np # type: ignore
+from .site_list import SiteList
 
 class SiteCollection(object):
     """Parent class for collections of sites.
@@ -14,7 +15,7 @@ class SiteCollection(object):
 
     """
 
-    def __init__(self, sites: List[Site]) -> None:
+    def __init__(self, sites: SiteList) -> None:
         """Create a SiteCollection object.
 
         Args:
@@ -137,20 +138,21 @@ class SiteCollection(object):
         for s in self.sites:
             s.contains_atoms = []
 
-    def sites_contain_points(self, points: np.ndarray) -> bool:
+    def sites_contain_points(self, 
+                             points: np.ndarray, 
+                             structure: Optional[Structure] = None) -> bool:
         """If implemented, Checks whether the set of sites contain 
         a corresponding set of fractional coordinates.
 
         Args:
             points (np.array): 3xN numpy array of fractional coordinates.
                 There should be one coordinate for each site being checked.
-        
+            structure (Structure): (Optional) Specific SiteCollection subclass
+                implementations may require a pymatgen Structure to be passed.
+                Default is `None`.
+ 
         Returns:
             (bool)
-
-        Notes:
-            Specific SiteCollection subclass implementations may require
-            additional arguments to be passed.
 
         """
         raise NotImplementedError('sites_contain_points() should be'

@@ -1,15 +1,21 @@
 from .site_collection import SiteCollection
 import numpy as np # type: ignore
+from pymatgen import Structure # type: ignore
+from typing import List
+from .atom import Atom
 
 class SphericalSiteCollection(SiteCollection):
 
-
-    def analyse_structure(self, atoms, structure):
+    def analyse_structure(self, 
+                          atoms: List[Atom], 
+                          structure: Structure) -> None:
         for a in atoms:
-            a.get_coords(structure)
+            a.assign_coords(structure)
         self.assign_site_occupations(atoms, structure)
 
-    def assign_site_occupations(self, atoms, structure):
+    def assign_site_occupations(self, 
+                                atoms: List[Atom], 
+                                structure: Structure) -> None:
         self.reset_site_occupations()
         for atom in atoms:
             if atom.in_site:

@@ -3,9 +3,11 @@ import numpy as np # type: ignore
 from scipy.spatial import Delaunay, ConvexHull # type: ignore
 from .site import Site
 from .tools import x_pbc, species_string_from_site
-from typing import List, Optional
-from pymatgen import Structure # type: ignore
+from typing import List, Optional, Type, TypeVar, Dict, Any
+from pymatgen import Structure, Lattice # type: ignore
 from .atom import Atom
+
+S = TypeVar('S', bound='PolyhedralSite')
 
 class PolyhedralSite(Site):
     """Describes a site defined by the polyhedral volume enclosed by a set
@@ -43,9 +45,13 @@ class PolyhedralSite(Site):
 
         """
         super(PolyhedralSite, self).__init__(label=label)
-        self.vertex_indices = vertex_indices
+        self._vertex_indices = vertex_indices
         self.vertex_coords = None
         self._delaunay: Optional[Delaunay] = None
+
+    @property
+    def vertex_indices(self) -> List[int]:
+        return self._vertex_indices
 
     def __repr__(self) -> str:
         string = ('site_analysis.PolyhedralSite('
@@ -162,7 +168,7 @@ class PolyhedralSite(Site):
 
     def contains_point(self, x: np.ndarray, 
                        structure: Optional[Structure] = None, 
-                       algo: str = 'simplex'):
+                       algo: str = 'simplex') -> bool:
         """Test whether a specific point is enclosed by this polyhedral site.
 
         Args:
@@ -207,7 +213,7 @@ class PolyhedralSite(Site):
             (bool)
 
         """
-        return np.any(self.delaunay.find_simplex(x) >= 0)
+        return bool(np.any(self.delaunay.find_simplex(x) >= 0))
  
     def contains_point_sn(self, x_list: np.ndarray) -> bool:
         """Test whether one or more points are inside this site, by calculating 
@@ -241,7 +247,10 @@ class PolyhedralSite(Site):
                 inside.append(dotsum == len(faces))
         return any(inside)
 
-    def contains_atom(self, atom: Atom, algo: str = 'simplex'):
+    def contains_atom(self, 
+                      atom: Atom, 
+                      lattice: Optional[Lattice] = None,
+                      algo: Optional[str] = 'simplex') -> bool:
         """Test whether an atom is inside this polyhedron.
 
         Args:
@@ -258,14 +267,15 @@ class PolyhedralSite(Site):
             raise ValueError(f'{algo} is not a valid algorithm keyword for contains_atom()')
         return self.contains_point(atom.frac_coords, algo=algo)
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> Dict['str', Any]:
         d = super(PolyhedralSite, self).as_dict()
         d['vertex_indices'] = self.vertex_indices
         d['vertex_coords'] = self.vertex_coords
         return d
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls: Type[S], 
+                  d: Dict['str', Any]) -> S:
         polyhedral_site = cls(vertex_indices=d['vertex_indices'])
         polyhedral_site.vertex_coords = d['vertex_coords']
         polyhedral_site.contains_atoms = d['contains_atoms']
@@ -286,6 +296,8 @@ class PolyhedralSite(Site):
         return np.mean(self.vertex_coords, axis=0)
 
     @classmethod
-    def sites_from_vertex_indices(cls, vertex_indices, label=None):
+    def sites_from_vertex_indices(cls: Type[S], 
+                                  vertex_indices: List[List[int]], 
+                                  label: Optional[str] = None) -> List[S]:
         sites = [cls(vertex_indices=vi, label=label) for vi in vertex_indices]
         return sites

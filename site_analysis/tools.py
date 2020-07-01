@@ -122,4 +122,4 @@ def x_pbc(x: np.ndarray) -> np.ndarray:
     return all_x
 
 def species_string_from_site(site: Site) -> str:
-    return [k.__str__() for k in site._species.keys()][0]
+    return [str(k.__str__()) for k in site._species.keys()][0]

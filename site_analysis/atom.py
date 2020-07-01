@@ -2,7 +2,7 @@ import itertools
 import json
 from monty.io import zopen # type: ignore
 import numpy as np # type: ignore
-from typing import List, Optional, ClassVar, TypeVar, Type
+from typing import List, Optional, ClassVar, TypeVar, Type, Dict, Any
 from pymatgen import Structure # type: ignore
 
 A = TypeVar('A', bound='Atom')
@@ -100,7 +100,7 @@ class Atom(object):
         else:
             return self._frac_coords
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> Dict['str', Any]:
         d = {
             "index": self.index,
             "in_site": self.in_site,
@@ -109,7 +109,7 @@ class Atom(object):
         return d
 
     @classmethod
-    def from_dict(cls: Type[A], d: dict) -> A:
+    def from_dict(cls: Type[A], d: Dict['str', Any]) -> A:
         atom = cls(index=d["index"])
         atom.in_site = d["in_site"]
         atom._frac_coords = np.array(d["frac_coords"])

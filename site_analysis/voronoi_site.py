@@ -1,4 +1,8 @@
 from .site import Site
+import numpy as np # type: ignore
+from typing import Optional, Any, TypeVar, Type, Dict
+
+S = TypeVar('S', bound='VoronoiSite')
 
 class VoronoiSite(Site):
     """Site subclass corresponding to Voronoi cells centered
@@ -9,7 +13,9 @@ class VoronoiSite(Site):
 
     """
     
-    def __init__(self, frac_coords, label=None):
+    def __init__(self, 
+                 frac_coords: np.ndarray, 
+                 label: Optional[str] = None):
         """Create a ``VoronoiSite`` instance.
         
         Args:
@@ -23,7 +29,7 @@ class VoronoiSite(Site):
         super(VoronoiSite, self).__init__(label=label)
         self.frac_coords = frac_coords
 
-    def as_dict(self):
+    def as_dict(self) -> Dict['str', Any]:
         """Json-serializable dict representation of this VoronoiSite.
 
         Args:
@@ -38,7 +44,7 @@ class VoronoiSite(Site):
         return d
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls: Type[S], d: Dict['str', Any]) -> S:
         """Create a VoronoiSite object from a dict representation.
 
         Args:

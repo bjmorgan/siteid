@@ -1,9 +1,12 @@
 from collections import Counter
 
-from typing import Optional, List
+from typing import Optional, List, TypeVar, Any, Type, Dict
 from typing import Counter as CounterType
 from site_analysis.atom import Atom
 import numpy as np # type: ignore
+from pymatgen import Structure, Lattice # type: ignore
+
+S = TypeVar('S', bound='Site')
 
 class Site(object):
     """Parent class for defining sites.
@@ -47,11 +50,11 @@ class Site(object):
         """
         self.index: int = Site._newid
         Site._newid += 1
-        self.label: Optional[str] = label
+        self.label = label
         self.contains_atoms: List[int] = []
         self.trajectory: List[List[int]] = []
         self.points: List[np.ndarray] = []
-        self.transitions: CounterType[int]= Counter()
+        self.transitions: CounterType[int] = Counter()
 
     def reset(self) -> None:
         """Reset the trajectory for this site.
@@ -70,7 +73,9 @@ class Site(object):
         self.trajectory = []
         self.transitions = Counter()
  
-    def contains_point(self, x: np.ndarray) -> bool:
+    def contains_point(self, 
+                       x: np.ndarray,
+                       lattice: Optional[Lattice] = None) -> bool:
         """Test whether the fractional coordinate x is contained by this site.
 
         This method should be implemented in the inherited subclass
@@ -88,7 +93,10 @@ class Site(object):
         raise NotImplementedError('contains_point should be implemented '
                                   'in the inherited class')
 
-    def contains_atom(self, atom: Atom) -> bool:
+    def contains_atom(self, 
+                      atom: Atom, 
+                      lattice: Optional[Lattice] = None, 
+                      algo: Optional[str] = None) -> bool:
         """Test whether this site contains a specific atom.
 
         Args:
@@ -100,7 +108,7 @@ class Site(object):
         """
         return self.contains_point(atom.frac_coords)
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> Dict[str, Any]:
         """Json-serializable dict representation of this Site.
 
         Args:
@@ -120,7 +128,7 @@ class Site(object):
         return d
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls: Type[S], d: Dict['str', Any]) -> S:
         """Create a Site object from a dict representation.
 
         Args:
@@ -139,7 +147,7 @@ class Site(object):
         site.label = d.get('label')
         return site 
 
-    def centre(self):
+    def centre(self) -> np.ndarray:
         """Returns the centre point of this site.
 
         This method should be implemented in the inherited subclass.
@@ -148,14 +156,62 @@ class Site(object):
             None
 
         Returns:
-            None
+            (np.array): (3,) numpy array.
 
         """ 
         raise NotImplementedError('centre should be implemeneted '
                                   'in the inherited class')
 
+    def coordination_number(self) -> int:
+        """Returns the coordination number of each site.
+
+        This method should be implemented in the inhereted subclass.
+        The implementation details will depend on the site type definition.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        raise NotImplementedError('coordination_number should be implemented '
+                                  'in the inhereted class')
+
+    def assign_vertex_coords(self, structure: Structure) -> None:
+        """If appropriate, assigns fractional coordinates to the site "vertices"
+        using the corresponding atom positions in a pymatgen Structure.
+   
+        This method should be implemented in the inhereted subclass.
+
+        Args:
+            structure (Structure): The pymatgen Structure used to assign
+                the vertices fractional coordinates.
+
+        Returns:
+            None
+        """
+        raise NotImplementedError('assign_vertex_coords is only implemented'
+                                  'in the PolyhedralSite class')
+
+    @property
+    def vertex_indices(self) -> List[int]:
+        """If appropriate, returns the list of atom indices for the vertex atoms.
+    
+        This property should be implemented in the inhereted subclass.
+
+        Args:
+            None
+
+        Returns:
+            (list(int))
+
+        """
+        raise NotImplementedError('vertex_indices is only implemented in the'
+                                  'PolyhedralSite class')
+ 
     @classmethod
-    def reset_index(cls, newid=0):
+    def reset_index(cls, newid: int = 0) -> None:
         """Reset the site index counter.
 
         Args:

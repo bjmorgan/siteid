@@ -1,4 +1,10 @@
 from .site_collection import SiteCollection
+from typing import Dict, List, Optional
+from .polyhedral_site import PolyhedralSite
+from pymatgen import Structure # type: ignore
+import numpy as np # type: ignore
+from .atom import Atom
+from .site_list import SiteList
 
 class PolyhedralSiteCollection(SiteCollection):
     """A collection of PolyhedralSite objects.
@@ -8,7 +14,8 @@ class PolyhedralSiteCollection(SiteCollection):
 
     """
 
-    def __init__(self, sites):
+    def __init__(self, 
+                 sites: SiteList) -> None:
         """Create a PolyhedralSiteCollection instance.
 
         Args:
@@ -21,33 +28,39 @@ class PolyhedralSiteCollection(SiteCollection):
         super(PolyhedralSiteCollection, self).__init__(sites)
         self._neighbouring_sites = construct_neighbouring_sites(self.sites)
 
-    def analyse_structure(self, atoms, structure):
+    def analyse_structure(self, 
+                          atoms: List[Atom], 
+                          structure: Structure) -> None:
         for a in atoms:
             a.assign_coords(structure)
         for s in self.sites:
             s.assign_vertex_coords(structure)
         self.assign_site_occupations(atoms, structure)
 
-    def assign_site_occupations(self, atoms, structure):
+    def assign_site_occupations(self, 
+                                atoms: List[Atom], 
+                                structure: Structure) -> None:
         self.reset_site_occupations()
         for atom in atoms:
             if atom.in_site:
                 # first check the site last occupied
                 previous_site = next(s for s in self.sites if s.index == atom.in_site)
                 if previous_site.contains_atom(atom):
-                    self.update_occupation( previous_site, atom )
+                    self.update_occupation(previous_site, atom)
                     continue # atom has not moved
                 else: # default is atom does not occupy any sites
                     atom.in_site = None
             for s in self.sites:
                 if s.contains_atom(atom):
-                    self.update_occupation( s, atom )
+                    self.update_occupation(s, atom)
                     break
 
-    def neighbouring_sites(self, index):
+    def neighbouring_sites(self, index: int) -> SiteList:
         return self._neighbouring_sites[index] 
 
-    def sites_contain_points(self, points, structure):
+    def sites_contain_points(self, 
+                             points: np.ndarray, 
+                             structure: Optional[Structure] = None) -> bool:
         """Checks whether the set of sites contain 
         a corresponding set of fractional coordinates.
 
@@ -61,10 +74,12 @@ class PolyhedralSiteCollection(SiteCollection):
             (bool)
 
         """
+        if not structure:
+            raise ValueError('structure needed to define polyhedral site vertex coords')
         check = all([s.contains_point(p,structure) for s, p in zip(self.sites, points)])
         return check
 
-def construct_neighbouring_sites(sites):
+def construct_neighbouring_sites(sites: SiteList) -> Dict[int, SiteList]:
     """
     Find all polyhedral sites that are face-sharing neighbours.
 
@@ -79,9 +94,9 @@ def construct_neighbouring_sites(sites):
             Keys are site indices. Values are lists of ``PolyhedralSite`` objects.
 
     """
-    neighbours = {}
+    neighbours: Dict[int, SiteList] = {}
     for site_i in sites:
-        neighbours[site_i.index] = []
+        neighbours[site_i.index] = SiteList()
         for site_j in sites:
             if site_i is site_j:
                 continue

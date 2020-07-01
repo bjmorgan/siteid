@@ -6,10 +6,12 @@ from .voronoi_site import VoronoiSite
 from .voronoi_site_collection import VoronoiSiteCollection
 from .spherical_site import SphericalSite
 from .spherical_site_collection import SphericalSiteCollection
-from typing import List, Optional
+from typing import List, Optional, Union, Callable
+import typing
 from .site import Site
 from .atom import Atom
 from pymatgen import Structure # type: ignore
+from .site_list import SiteList
 
 class Trajectory(object):
     """Class for performing sites analysis on simulation trajectories."""
@@ -18,7 +20,7 @@ class Trajectory(object):
                               VoronoiSite: VoronoiSiteCollection,
                               SphericalSite: SphericalSiteCollection }
 
-    def __init__(self, sites: List[Site], atoms: List[Atom]):
+    def __init__(self, sites: SiteList, atoms: List[Atom]):
         site_collection_class = None
         for k, v in Trajectory.site_collection_types.items():
             if all( [ isinstance( s, k ) for s in sites ] ):
@@ -44,9 +46,9 @@ class Trajectory(object):
     def assign_site_occupations(self, structure: Structure) -> None:
         self.site_collection.assign_site_occupations(self.atoms, structure)
                     
-    def site_coordination_numbers(self):
-        return Counter( [ s.coordination_number for s in self.sites ] )
-
+    def site_coordination_numbers(self) -> typing.Counter[Callable[[], int]]:
+        return Counter([s.coordination_number for s in self.sites])
+ 
     def site_labels(self) -> List[Optional[str]]:
         return [s.label for s in self.sites]
    

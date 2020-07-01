@@ -7,4 +7,5 @@ site_analysis.egg-info
 **/*.swp
 build
 dist
+.mypy_cache/
 

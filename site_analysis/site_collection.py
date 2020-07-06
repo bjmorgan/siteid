@@ -4,8 +4,9 @@ from .atom import Atom
 from pymatgen import Structure # type: ignore
 import numpy as np # type: ignore
 from .site_list import SiteList
+from abc import ABC, abstractmethod
 
-class SiteCollection(object):
+class SiteCollection(ABC):
     """Parent class for collections of sites.
 
     Collections of specific site types should inherit from this class.
@@ -24,6 +25,7 @@ class SiteCollection(object):
         """
         self.sites = sites
 
+    @abstractmethod
     def assign_site_occupations(self, atoms: List[Atom], structure: Structure) -> None:
         """Assigns atoms to sites for a specific structure.
 
@@ -45,6 +47,7 @@ class SiteCollection(object):
         raise NotImplementedError('assign_site_occupations should be implemented in'
             ' the derived class')
 
+    @abstractmethod
     def analyse_structure(self, atoms: List[Atom], structure: Structure) -> None:
         """Perform a site analysis for a set of atoms on a specific structure.
 
@@ -61,7 +64,8 @@ class SiteCollection(object):
         """
         raise NotImplementedError('analyse_structure should be implemented in the derived class')
 
-    def neighbouring_sites(self, site_index: int) -> List[Site]:
+    @abstractmethod
+    def neighbouring_sites(self, site_index: int) -> SiteList:
         """If implemented, returns a list of sites that neighbour
         a given site.
 
@@ -138,23 +142,23 @@ class SiteCollection(object):
         for s in self.sites:
             s.contains_atoms = []
 
-    def sites_contain_points(self, 
-                             points: np.ndarray, 
-                             structure: Optional[Structure] = None) -> bool:
-        """If implemented, Checks whether the set of sites contain 
-        a corresponding set of fractional coordinates.
-
-        Args:
-            points (np.array): 3xN numpy array of fractional coordinates.
-                There should be one coordinate for each site being checked.
-            structure (Structure): (Optional) Specific SiteCollection subclass
-                implementations may require a pymatgen Structure to be passed.
-                Default is `None`.
- 
-        Returns:
-            (bool)
-
-        """
-        raise NotImplementedError('sites_contain_points() should be'
-            ' implemented in the derived class')
-
+    #def sites_contain_points(self, 
+    #                         points: np.ndarray, 
+    #                         structure: Optional[Structure] = None) -> bool:
+    #    """If implemented, Checks whether the set of sites contain 
+    #    a corresponding set of fractional coordinates.
+#
+#        Args:
+#            points (np.array): 3xN numpy array of fractional coordinates.
+#                There should be one coordinate for each site being checked.
+#            structure (Structure): (Optional) Specific SiteCollection subclass
+#                implementations may require a pymatgen Structure to be passed.
+#                Default is `None`.
+# 
+#        Returns:
+#            (bool)
+#
+#        """
+#        raise NotImplementedError('sites_contain_points() should be'
+#            ' implemented in the derived class')
+#

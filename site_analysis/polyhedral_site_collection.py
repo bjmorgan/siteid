@@ -4,7 +4,7 @@ from .polyhedral_site import PolyhedralSite
 from pymatgen import Structure # type: ignore
 import numpy as np # type: ignore
 from .atom import Atom
-from .site_list import SiteList
+#from .site_list import SiteList
 
 class PolyhedralSiteCollection(SiteCollection):
     """A collection of PolyhedralSite objects.
@@ -15,7 +15,7 @@ class PolyhedralSiteCollection(SiteCollection):
     """
 
     def __init__(self, 
-                 sites: SiteList) -> None:
+                 sites: List[PolyhedralSite]) -> None:
         """Create a PolyhedralSiteCollection instance.
 
         Args:
@@ -25,8 +25,12 @@ class PolyhedralSiteCollection(SiteCollection):
             None
 
         """
-        super(PolyhedralSiteCollection, self).__init__(sites)
-        self._neighbouring_sites = construct_neighbouring_sites(self.sites)
+        for s in sites:
+            if not isinstance(s, PolyhedralSite):
+                raise TypeError(f'Incorrect Site type passed to PolyhedralSiteCollection'
+                                f'Expected PolyhedralSite, but was passed {type(s)}')
+        super().__init__(sites)
+        self._neighbouring_sites = self.construct_neighbouring_sites()
 
     def analyse_structure(self, 
                           atoms: List[Atom], 
@@ -34,6 +38,7 @@ class PolyhedralSiteCollection(SiteCollection):
         for a in atoms:
             a.assign_coords(structure)
         for s in self.sites:
+            assert isinstance(s, PolyhedralSite)
             s.assign_vertex_coords(structure)
         self.assign_site_occupations(atoms, structure)
 
@@ -55,7 +60,7 @@ class PolyhedralSiteCollection(SiteCollection):
                     self.update_occupation(s, atom)
                     break
 
-    def neighbouring_sites(self, index: int) -> SiteList:
+    def neighbouring_sites(self, index: int) -> List[PolyhedralSite]:
         return self._neighbouring_sites[index] 
 
     def sites_contain_points(self, 
@@ -79,30 +84,32 @@ class PolyhedralSiteCollection(SiteCollection):
         check = all([s.contains_point(p,structure) for s, p in zip(self.sites, points)])
         return check
 
-def construct_neighbouring_sites(sites: SiteList) -> Dict[int, SiteList]:
-    """
-    Find all polyhedral sites that are face-sharing neighbours.
+    def construct_neighbouring_sites(self) -> Dict[int, List[PolyhedralSite]]:
+        """
+        Find all polyhedral sites that are face-sharing neighbours.
 
-    Any polyhedral sites that share 3 or more vertices are considered
-    to share a face.
+        Any polyhedral sites that share 3 or more vertices are considered
+        to share a face.
 
-    Args:
-        None
+        Args:
+            None
 
-    Returns:
-        (dict): Dictionary of `int`: `list` entries. 
-            Keys are site indices. Values are lists of ``PolyhedralSite`` objects.
+        Returns:
+            (dict): Dictionary of `int`: `list` entries. 
+                Keys are site indices. Values are lists of ``PolyhedralSite`` objects.
 
-    """
-    neighbours: Dict[int, SiteList] = {}
-    for site_i in sites:
-        neighbours[site_i.index] = SiteList()
-        for site_j in sites:
-            if site_i is site_j:
-                continue
-            # 3 or more common vertices indicated a shared face.
-            n_shared_vertices = len(set(site_i.vertex_indices) & set(site_j.vertex_indices))
-            if n_shared_vertices >= 3:
-                neighbours[site_i.index].append(site_j)
-    return neighbours
+        """
+        neighbours: Dict[int, List[PolyhedralSite]] = {}
+        for site_i in self.sites:
+            assert isinstance(site_i, PolyhedralSite)
+            neighbours[site_i.index] = []
+            for site_j in self.sites:
+                assert isinstance(site_j, PolyhedralSite)
+                if site_i is site_j:
+                    continue
+                # 3 or more common vertices indicated a shared face.
+                n_shared_vertices = len(set(site_i.vertex_indices) & set(site_j.vertex_indices))
+                if n_shared_vertices >= 3:
+                    neighbours[site_i.index].append(site_j)
+        return neighbours
  

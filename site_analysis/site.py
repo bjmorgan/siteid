@@ -1,4 +1,5 @@
 from collections import Counter
+from abc import ABC, abstractmethod
 
 from typing import Optional, List, TypeVar, Any, Type, Dict
 from typing import Counter as CounterType
@@ -8,7 +9,7 @@ from pymatgen import Structure, Lattice # type: ignore
 
 S = TypeVar('S', bound='Site')
 
-class Site(object):
+class Site(ABC):
     """Parent class for defining sites.
 
     A Site is a bounded volume that can contain none, one, or more atoms.
@@ -72,7 +73,8 @@ class Site(object):
         self.contains_atoms = []
         self.trajectory = []
         self.transitions = Counter()
- 
+
+    @abstractmethod 
     def contains_point(self, 
                        x: np.ndarray,
                        lattice: Optional[Lattice] = None) -> bool:
@@ -147,6 +149,7 @@ class Site(object):
         site.label = d.get('label')
         return site 
 
+    @abstractmethod
     def centre(self) -> np.ndarray:
         """Returns the centre point of this site.
 
@@ -162,6 +165,8 @@ class Site(object):
         raise NotImplementedError('centre should be implemeneted '
                                   'in the inherited class')
 
+    @abstractmethod
+    @property
     def coordination_number(self) -> int:
         """Returns the coordination number of each site.
 
@@ -178,37 +183,37 @@ class Site(object):
         raise NotImplementedError('coordination_number should be implemented '
                                   'in the inhereted class')
 
-    def assign_vertex_coords(self, structure: Structure) -> None:
-        """If appropriate, assigns fractional coordinates to the site "vertices"
-        using the corresponding atom positions in a pymatgen Structure.
-   
-        This method should be implemented in the inhereted subclass.
+#    def assign_vertex_coords(self, structure: Structure) -> None:
+#        """If appropriate, assigns fractional coordinates to the site "vertices"
+#        using the corresponding atom positions in a pymatgen Structure.
+#   
+#        This method should be implemented in the inhereted subclass.
+#
+#        Args:
+#            structure (Structure): The pymatgen Structure used to assign
+#                the vertices fractional coordinates.
+#
+#        Returns:
+#            None
+#        """
+#        raise NotImplementedError('assign_vertex_coords is only implemented'
+#                                  'in the PolyhedralSite class')
 
-        Args:
-            structure (Structure): The pymatgen Structure used to assign
-                the vertices fractional coordinates.
-
-        Returns:
-            None
-        """
-        raise NotImplementedError('assign_vertex_coords is only implemented'
-                                  'in the PolyhedralSite class')
-
-    @property
-    def vertex_indices(self) -> List[int]:
-        """If appropriate, returns the list of atom indices for the vertex atoms.
-    
-        This property should be implemented in the inhereted subclass.
-
-        Args:
-            None
-
-        Returns:
-            (list(int))
-
-        """
-        raise NotImplementedError('vertex_indices is only implemented in the'
-                                  'PolyhedralSite class')
+#    @property
+#    def vertex_indices(self) -> List[int]:
+#        """If appropriate, returns the list of atom indices for the vertex atoms.
+#    
+#        This property should be implemented in the inhereted subclass.
+#
+#        Args:
+#            None
+#
+#        Returns:
+#            (list(int))
+#
+#        """
+#        raise NotImplementedError('vertex_indices is only implemented in the'
+#                                  'PolyhedralSite class')
  
     @classmethod
     def reset_index(cls, newid: int = 0) -> None:

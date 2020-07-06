@@ -30,7 +30,7 @@ def get_nearest_neighbour_indices(structure: Structure,
         (list(list(int)): N_sites x N_neighbours nested list of vertex atom indices.
 
     """
-    vertex_indices = [ i for i, s in enumerate(structure) if s.species_string in vertex_species ]
+    vertex_indices = [i for i, s in enumerate(structure) if s.species_string in vertex_species]
     struc1_coords = np.array([structure[i].frac_coords for i in vertex_indices])
     struc2_coords = ref_structure.frac_coords
     lattice = structure[0].lattice
@@ -38,7 +38,7 @@ def get_nearest_neighbour_indices(structure: Structure,
     nn_indices = []
     for dr_i in dr_ij:
         idx = np.argpartition(dr_i, n_coord)
-        nn_indices.append( sorted([ vertex_indices[i] for i in idx[:n_coord] ]) )
+        nn_indices.append(sorted([vertex_indices[i] for i in idx[:n_coord]]))
     return nn_indices
 
 def get_vertex_indices(structure: Structure, 
@@ -73,18 +73,18 @@ def get_vertex_indices(structure: Structure,
             coordination environment.
 
     """
-    central_sites = [ s for s in structure if s.species_string == centre_species ]
+    central_sites = [s for s in structure if s.species_string == centre_species]
     if isinstance(n_vertices, int):
         n_vertices = [n_vertices] * len(central_sites)
     if isinstance(vertex_species, str):
-        vertex_species = [ vertex_species ]
+        vertex_species = [vertex_species]
     vertex_indices = []
     for site, n_vert in zip(central_sites, n_vertices):
-        neighbours = [ s for s in structure.get_neighbors(site, r=cutoff, include_index=True) 
-                       if s[0].species_string in vertex_species ]
+        neighbours = [s for s in structure.get_neighbors(site, r=cutoff, include_index=True) 
+                      if s[0].species_string in vertex_species]
         neighbours.sort(key=lambda x: x[1])
-        atom_indices = [ n[2] for n in neighbours[:n_vert] ]
-        vertex_indices.append( atom_indices )
+        atom_indices = [n[2] for n in neighbours[:n_vert]]
+        vertex_indices.append(atom_indices)
     return vertex_indices
 
 def x_pbc(x: np.ndarray) -> np.ndarray:

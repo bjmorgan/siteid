@@ -1,12 +1,16 @@
 from collections import Counter
 from tqdm import tqdm, tqdm_notebook # type: ignore
-from .polyhedral_site_collection import PolyhedralSiteCollection
+
 from .polyhedral_site import PolyhedralSite
 from .voronoi_site import VoronoiSite
-from .voronoi_site_collection import VoronoiSiteCollection
 from .spherical_site import SphericalSite
+
+from .voronoi_site_collection import VoronoiSiteCollection
+from .polyhedral_site_collection import PolyhedralSiteCollection
 from .spherical_site_collection import SphericalSiteCollection
+
 from typing import List, Optional, Union, Callable
+
 import typing
 from .site import Site
 from .atom import Atom
@@ -16,12 +20,12 @@ from .site_list import SiteList
 class Trajectory(object):
     """Class for performing sites analysis on simulation trajectories."""
 
-    site_collection_types = { PolyhedralSite: PolyhedralSiteCollection,
-                              VoronoiSite: VoronoiSiteCollection,
-                              SphericalSite: SphericalSiteCollection }
+    site_collection_types = {PolyhedralSite: PolyhedralSiteCollection,
+                             VoronoiSite: VoronoiSiteCollection,
+                             SphericalSite: SphericalSiteCollection}
 
     def __init__(self, sites: SiteList, atoms: List[Atom]):
-        site_collection_class = None
+        site_collection_class: Callable
         for k, v in Trajectory.site_collection_types.items():
             if all( [ isinstance( s, k ) for s in sites ] ):
                 site_collection_class = v
@@ -46,7 +50,7 @@ class Trajectory(object):
     def assign_site_occupations(self, structure: Structure) -> None:
         self.site_collection.assign_site_occupations(self.atoms, structure)
                     
-    def site_coordination_numbers(self) -> typing.Counter[Callable[[], int]]:
+    def site_coordination_numbers(self) -> typing.Counter[int]:
         return Counter([s.coordination_number for s in self.sites])
  
     def site_labels(self) -> List[Optional[str]]:

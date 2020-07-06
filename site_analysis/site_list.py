@@ -1,11 +1,15 @@
-from typing import TypeVar, Generic, List
+from typing import TypeVar, Generic, List, Union
 from .site import Site
+from .polyhedral_site import PolyhedralSite
+from .voronoi_site import VoronoiSite
+from .spherical_site import SphericalSite
 from collections import Sequence
 
-T = TypeVar('T')
+#T = TypeVar('T')
+SiteList = Union[List[PolyhedralSite], List[VoronoiSite], List[SphericalSite]]
 
-class SiteList(List[Site]):
-
-    def __init__(self) -> None:
-        self.sites: List[Site] = []
+#class SiteList(List[AnySite]):
+#
+#    def __init__(self) -> None:
+#        self.sites: List[AnySite] = []
 

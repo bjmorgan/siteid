@@ -7,6 +7,7 @@ from unittest.mock import patch, Mock
 import numpy as np
 from collections import Counter
 
+@patch.multiple(SiteCollection, __abstractmethods__=set())
 class SiteCollectionTestCase(unittest.TestCase):
 
     def test_site_collection_is_initialised(self):
@@ -14,6 +15,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         site_collection = SiteCollection(sites=sites)
         self.assertEqual(site_collection.sites, sites)
 
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_assign_site_occupations_raises_not_implemented_error(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         atoms = [Mock(spec=Atom), Mock(spec=Atom)]
@@ -22,6 +24,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             site_collection.assign_site_occupations(atoms, structure)
 
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_analyse_structure_raises_not_implemented_error(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         atoms = [Mock(spec=Atom), Mock(spec=Atom)]
@@ -30,12 +33,14 @@ class SiteCollectionTestCase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             site_collection.analyse_structure(atoms, structure)
 
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_neighbouring_sites_raises_not_implemented_error(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         site_collection = SiteCollection(sites=sites)
         with self.assertRaises(NotImplementedError):
             site_collection.neighbouring_sites(site_index=27)
    
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_site_by_index(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         sites[0].index = 12
@@ -46,6 +51,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             site_collection.site_by_index(93)
    
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_update_occupation_if_atom_was_unassigned(self):
         sites = [Mock(spec=Site)]
         sites[0].index = 12
@@ -61,6 +67,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         np.testing.assert_array_equal(sites[0].points, [atom.frac_coords])
         self.assertEqual(atom.in_site, sites[0].index)
 
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_update_occupation_if_atom_has_not_moved(self):
         sites = [Mock(spec=Site)]
         sites[0].index = 12
@@ -76,6 +83,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         np.testing.assert_array_equal(sites[0].points, [atom.frac_coords])
         self.assertEqual(atom.in_site, sites[0].index)
 
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_update_occupation_if_atom_has_moved(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         sites[0].index = 12
@@ -95,6 +103,7 @@ class SiteCollectionTestCase(unittest.TestCase):
         self.assertEqual(atom.in_site, sites[0].index)
         self.assertEqual(sites[1].transitions, {12: 1})
   
+    @patch.multiple(SiteCollection, __abstractmethods__=set())
     def test_reset_site_occupations(self):
         sites = [Mock(spec=Site), Mock(spec=Site)]
         sites[0].contains_atoms = [12]

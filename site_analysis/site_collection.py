@@ -142,23 +142,24 @@ class SiteCollection(ABC):
         for s in self.sites:
             s.contains_atoms = []
 
-    #def sites_contain_points(self, 
-    #                         points: np.ndarray, 
-    #                         structure: Optional[Structure] = None) -> bool:
-    #    """If implemented, Checks whether the set of sites contain 
-    #    a corresponding set of fractional coordinates.
-#
-#        Args:
-#            points (np.array): 3xN numpy array of fractional coordinates.
-#                There should be one coordinate for each site being checked.
-#            structure (Structure): (Optional) Specific SiteCollection subclass
-#                implementations may require a pymatgen Structure to be passed.
-#                Default is `None`.
-# 
-#        Returns:
-#            (bool)
-#
-#        """
-#        raise NotImplementedError('sites_contain_points() should be'
-#            ' implemented in the derived class')
-#
+    @abstractmethod
+    def sites_contain_points(self, 
+                             points: np.ndarray, 
+                             structure: Optional[Structure] = None) -> bool:
+        """If implemented, Checks whether the set of sites contain 
+        a corresponding set of fractional coordinates.
+
+        Args:
+            points (np.array): 3xN numpy array of fractional coordinates.
+                There should be one coordinate for each site being checked.
+            structure (Structure): (Optional) Specific SiteCollection subclass
+                implementations may require a pymatgen Structure to be passed.
+                Default is `None`.
+ 
+        Returns:
+            (bool)
+
+        """
+        raise NotImplementedError('sites_contain_points() should be'
+            ' implemented in the derived class')
+

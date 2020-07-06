@@ -24,8 +24,7 @@ class SphericalSite(Site):
 
     def contains_atom(self, 
                       atom: Atom, 
-                      lattice: Optional[Lattice] = None,
-                      algo: Optional[Lattice] = None) -> bool:
+                      lattice: Optional[Lattice] = None) -> bool:
         if not lattice:
             raise ValueError("argument 'lattice' not set.")
         return self.contains_point(atom.frac_coords, lattice)

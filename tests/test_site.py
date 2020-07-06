@@ -7,11 +7,13 @@ from collections import Counter
 
 class SiteTestCase(unittest.TestCase):
 
+    @patch.multiple(Site, __abstractmethods__=set())
     def setUp(self):
         Site._newid = 0
+        self.site = Site()
 
     def test_site_is_initialised(self):
-        site = Site()
+        site = self.site
         self.assertEqual(site.index, 0)
         self.assertEqual(site.label, None)
         self.assertEqual(site.contains_atoms, [])
@@ -19,17 +21,19 @@ class SiteTestCase(unittest.TestCase):
         self.assertEqual(site.points, [])
         self.assertEqual(site.transitions, {})
 
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_site_is_initialised_with_label(self):
         site = Site(label='foo')
         self.assertEqual(site.label, 'foo')
 
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_site_index_autoincrements(self):
         site1 = Site()
         site2 = Site()
         self.assertEqual(site2.index, site1.index + 1)
 
     def test_reset(self):
-        site = Site()
+        site = self.site
         site.contains_atoms = ['foo']
         site.trajectory = ['bar']
         site.transitions = Counter([4])
@@ -38,27 +42,14 @@ class SiteTestCase(unittest.TestCase):
         self.assertEqual(site.contains_atoms, [])
         self.assertEqual(site.transitions, {})
 
-    def test_contains_point_raises_not_implemented_error(self):
-        site = Site()
-        with self.assertRaises(NotImplementedError):
-            site.contains_point(np.array([0,0,0]))
-
     def test_centre_raises_not_implemented_error(self):
-        site = Site()
+        site = self.site
         with self.assertRaises(NotImplementedError):
             site.centre()
 
-    def test_contains_atom(self):
-        site = Site()
-        atom = Mock(spec=Atom)
-        atom.frac_coords = np.array([0,0,0])
-        site.contains_point = Mock(return_value=True)
-        self.assertTrue(site.contains_atom(atom))
-        site.contains_point = Mock(return_value=False)
-        self.assertFalse(site.contains_atom(atom))
-
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_as_dict(self):
-        site = Site()
+        site = self.site
         site.index = 7
         site.contains_atoms = [3]
         site.trajectory = [10,11,12]
@@ -79,6 +70,7 @@ class SiteTestCase(unittest.TestCase):
         self.assertEqual(site.label, expected_dict['label'])
         self.assertEqual(site.transitions, expected_dict['transitions'])
 
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_reset_index(self):
         Site._newid = 7
         site = Site()
@@ -87,6 +79,7 @@ class SiteTestCase(unittest.TestCase):
         site = Site()
         self.assertEqual(site.index, 0)
         
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_reset_index_to_defined_index(self):
         Site._newid = 7
         site = Site()
@@ -95,6 +88,7 @@ class SiteTestCase(unittest.TestCase):
         site = Site()
         self.assertEqual(site.index, 12)
    
+    @patch.multiple(Site, __abstractmethods__=set())
     def test_from_dict(self):
         site_dict = {'index': 7,
                      'contains_atoms': [3],

@@ -104,7 +104,7 @@ class Atom(object):
         d = {
             "index": self.index,
             "in_site": self.in_site,
-            "frac_coords": self._frac_coords.tolist() if self._frac_coords else None,
+            "frac_coords": self._frac_coords.tolist() if self._frac_coords is not None else None,
         }
         return d
 

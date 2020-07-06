@@ -13,6 +13,7 @@ class PolyhedralSiteCollection(SiteCollection):
         sites (list): List of ``Site``-like objects.
 
     """
+    sites: List[PolyhedralSite]
 
     def __init__(self, 
                  sites: List[PolyhedralSite]) -> None:
@@ -38,7 +39,6 @@ class PolyhedralSiteCollection(SiteCollection):
         for a in atoms:
             a.assign_coords(structure)
         for s in self.sites:
-            assert isinstance(s, PolyhedralSite)
             s.assign_vertex_coords(structure)
         self.assign_site_occupations(atoms, structure)
 
@@ -101,10 +101,8 @@ class PolyhedralSiteCollection(SiteCollection):
         """
         neighbours: Dict[int, List[PolyhedralSite]] = {}
         for site_i in self.sites:
-            assert isinstance(site_i, PolyhedralSite)
             neighbours[site_i.index] = []
             for site_j in self.sites:
-                assert isinstance(site_j, PolyhedralSite)
                 if site_i is site_j:
                     continue
                 # 3 or more common vertices indicated a shared face.

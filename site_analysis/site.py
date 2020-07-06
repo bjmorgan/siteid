@@ -74,42 +74,6 @@ class Site(ABC):
         self.trajectory = []
         self.transitions = Counter()
 
-    @abstractmethod 
-    def contains_point(self, 
-                       x: np.ndarray,
-                       lattice: Optional[Lattice] = None) -> bool:
-        """Test whether the fractional coordinate x is contained by this site.
-
-        This method should be implemented in the inherited subclass
-
-        Args:
-            x (np.array): Fractional coordinate.
-
-        Returns:
-            (bool)
-
-        Note:
-            Specific Site subclasses may require additional arguments to be passed.
-
-        """
-        raise NotImplementedError('contains_point should be implemented '
-                                  'in the inherited class')
-
-    def contains_atom(self, 
-                      atom: Atom, 
-                      lattice: Optional[Lattice] = None, 
-                      algo: Optional[str] = None) -> bool:
-        """Test whether this site contains a specific atom.
-
-        Args:
-            atom (Atom): The atom to test.
-
-        Returns:
-            (bool)
-
-        """
-        return self.contains_point(atom.frac_coords)
-
     def as_dict(self) -> Dict[str, Any]:
         """Json-serializable dict representation of this Site.
 
@@ -165,23 +129,23 @@ class Site(ABC):
         raise NotImplementedError('centre should be implemeneted '
                                   'in the inherited class')
 
-    @abstractmethod
-    @property
-    def coordination_number(self) -> int:
-        """Returns the coordination number of each site.
-
-        This method should be implemented in the inhereted subclass.
-        The implementation details will depend on the site type definition.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        raise NotImplementedError('coordination_number should be implemented '
-                                  'in the inhereted class')
+    #@property
+    #@abstractmethod
+    #def coordination_number(self) -> int:
+    #    """Returns the coordination number of each site.
+#
+#        This method should be implemented in the inhereted subclass.
+#        The implementation details will depend on the site type definition.
+#
+#        Args:
+#            None
+#
+#        Returns:
+#            None
+##
+#        """
+#        raise NotImplementedError('coordination_number should be implemented '
+#                                  'in the inhereted class')
 
 #    def assign_vertex_coords(self, structure: Structure) -> None:
 #        """If appropriate, assigns fractional coordinates to the site "vertices"

@@ -58,3 +58,16 @@ class VoronoiSite(Site):
         voronoi_site.label = d.get('label')
         return voronoi_site 
 
+    def centre(self) -> np.ndarray:
+        """Returns the centre point of this site.
+
+        Args:
+            None
+
+        Returns:
+            (np.array), (3,) numpy array.
+
+        """
+        return self.frac_coords
+
+ 

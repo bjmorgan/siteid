@@ -249,7 +249,6 @@ class PolyhedralSite(Site):
 
     def contains_atom(self, 
                       atom: Atom, 
-                      lattice: Optional[Lattice] = None,
                       algo: Optional[str] = 'simplex') -> bool:
         """Test whether an atom is inside this polyhedron.
 

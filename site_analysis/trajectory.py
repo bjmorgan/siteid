@@ -50,9 +50,6 @@ class Trajectory(object):
     def assign_site_occupations(self, structure: Structure) -> None:
         self.site_collection.assign_site_occupations(self.atoms, structure)
                     
-    def site_coordination_numbers(self) -> typing.Counter[int]:
-        return Counter([s.coordination_number for s in self.sites])
- 
     def site_labels(self) -> List[Optional[str]]:
         return [s.label for s in self.sites]
    

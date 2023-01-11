@@ -91,8 +91,13 @@ class Trajectory(object):
         return list(map(list, zip(*[atom.trajectory for atom in self.atoms])))
 
     @property
-    def sites_trajectory(self):
-        return list(map(list, zip(*[site.trajectory for site in self.sites])))
+    def sites_trajectory(self,
+                         labels = None)
+        if labels == None:
+            labels = self.site_labels()
+        elif isinstance(label, str):
+            labels = [label]:
+        return list(map(list, zip(*[site.trajectory for site in self.sites if site.label in labels])))
 
     @property
     def at(self):

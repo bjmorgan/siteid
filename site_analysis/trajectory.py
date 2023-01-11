@@ -96,7 +96,7 @@ class Trajectory(object):
 
     def sites_trajectory_by_labels(self,
                                    labels):
-        elif isinstance(labels, str):
+        if isinstance(labels, str):
             labels = [labels]
         return list(map(list, zip(*[site.trajectory for site in self.sites if site.label in labels])))
 

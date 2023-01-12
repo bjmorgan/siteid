@@ -108,13 +108,21 @@ class SiteTestCase(unittest.TestCase):
         self.assertEqual(site.index, 12)
    
     def test_from_dict(self):
+        site_dict = {'foo': 'bar'}
+        with patch('site_analysis.site.Site.set_attributes_from_dict') as mock_set_attributes_from_dict:
+            site = ConcreteSite.from_dict(site_dict)
+            assert isinstance(site, ConcreteSite)
+            mock_set_attributes_from_dict.assert_called_with(site_dict)
+        
+    def test_set_attributes_from_dict(self):
         site_dict = {'index': 7,
                      'contains_atoms': [3],
                      'trajectory': [10,11,12],
                      'points': [np.array([0,0,0])],
                      'label': 'foo',
                      'transitions': Counter([3,3,2])}
-        site = ConcreteSite.from_dict(site_dict)
+        site = ConcreteSite()
+        site.set_attributes_from_dict(site_dict)  
         self.assertEqual(site.index, site_dict['index'])
         self.assertEqual(site.contains_atoms, site_dict['contains_atoms'])
         self.assertEqual(site.trajectory, site_dict['trajectory'])

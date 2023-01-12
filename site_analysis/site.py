@@ -146,7 +146,7 @@ class Site(ABC):
         return site 
         
     def set_attributes_from_dict(self,
-            d:dict) -> None:
+            d: dict) -> None:
             """TODO
             
             """

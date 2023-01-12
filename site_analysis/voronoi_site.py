@@ -53,7 +53,7 @@ class VoronoiSite(Site):
 
         """
         voronoi_site = cls(frac_coords=d['frac_coords'])
-        voronoi_site.label = d.get('label')
+        voronoi_site.set_attributes_from_dict(d)
         return voronoi_site 
 
     def centre(self) -> np.ndarray:

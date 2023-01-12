@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import Counter
 from tqdm import tqdm, tqdm_notebook # type: ignore
 from .polyhedral_site_collection import PolyhedralSiteCollection
@@ -8,7 +9,7 @@ from .spherical_site import SphericalSite
 from .spherical_site_collection import SphericalSiteCollection
 from .site import Site
 from .atom import Atom
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Dict, Any
 from pymatgen.core import Structure
 
 class Trajectory(object):
@@ -35,6 +36,20 @@ class Trajectory(object):
         self.timesteps: List[int] = []
         self.atom_lookup = {a.index: i for i, a in enumerate(atoms)}
         self.site_lookup = {s.index: i for i, s in enumerate(sites)}
+        
+    def as_dict(self) -> Dict[str, Any]:
+        d = {'sites': [s.as_dict() for s in self.sites],
+             'atoms': [a.as_dict() for a in self.atoms],
+             'timesteps': self.timesteps}
+        return d
+        
+    @classmethod
+    def from_dict(cls,
+                  d: Dict[str, Any]) -> Trajectory:
+        trajectory = Trajectory(sites=[Site.from_dict(s) for s in d['sites']],
+                                atoms=[Atom.from_dict(a) for a in d['atoms']])
+        trajectory.timesteps = d['timesteps']
+        return trajectory
 
     def atom_by_index(self,
             i: int) -> Atom:

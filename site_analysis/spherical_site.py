@@ -53,9 +53,9 @@ class SphericalSite(Site):
     @classmethod
     def from_dict(cls,
             d: Dict) -> SphericalSite:
-        spherical_site = cls( frac_coords=d['frac_coords'],
-                              rcut=d['rcut'] )
-        spherical_site.label = d.get('label')
+        spherical_site = cls(frac_coords=d['frac_coords'],
+                             rcut=d['rcut'])
+        spherical_site.set_attributes_from_dict(d)
         return spherical_site 
 
 

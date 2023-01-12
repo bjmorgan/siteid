@@ -142,14 +142,21 @@ class Site(ABC):
 
         """
         site = cls()
-        site.index = d['index']
-        site.trajectory = d['trajectory']
-        site.contains_atoms = d['contains_atoms']
-        site.points = d['points']
-        site.transitions = d['transitions']
-        site.label = d.get('label')
+        site.set_attributes_from_dict(d)
         return site 
-
+        
+    def set_attributes_from_dict(self,
+            d:dict) -> None:
+            """TODO
+            
+            """
+            self.index = d['index']
+            self.trajectory = d['trajectory']
+            self.contains_atoms = d['contains_atoms']
+            self.points = d['points']
+            self.transitions = d['transitions']
+            self.label = d.get('label')
+        
     @abstractmethod
     def centre(self) -> np.ndarray:
         """Returns the centre point of this site.

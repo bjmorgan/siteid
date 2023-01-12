@@ -281,7 +281,7 @@ class PolyhedralSite(Site):
         polyhedral_site = cls(vertex_indices=d['vertex_indices'])
         polyhedral_site.vertex_coords = d['vertex_coords']
         polyhedral_site.contains_atoms = d['contains_atoms']
-        polyhedral_site.label = d.get('label')
+        polyhedral_site.set_attributes_from_dict(d)
         return polyhedral_site 
 
     def centre(self) -> np.ndarray:

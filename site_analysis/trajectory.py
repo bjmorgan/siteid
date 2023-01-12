@@ -17,8 +17,7 @@ class Trajectory(object):
     def __init__(self,
             sites: List[Site],
             atoms: List[Atom]) -> None:
-        # ensure that all sites are of the same type
-        if len(set([type(s) for s in sites])) > 1:
+        if len(set([type(s) for s in sites])) > 1: # ensure that all sites are of the same type
             raise TypeError("A Trajectory cannot be initialised with mixed Site types")
         self.site_collection: Union[PolyhedralSiteCollection,
                                     VoronoiSiteCollection,
@@ -68,8 +67,8 @@ class Trajectory(object):
         return [s.contains_atoms for s in self.sites]
 
     def append_timestep(self,
-        structure: Structure,
-        t: Optional[int]=None) -> None:
+            structure: Structure,
+            t: Optional[int]=None) -> None:
         self.analyse_structure(structure)
         for atom in self.atoms:
             assert(isinstance(atom.in_site, int))
@@ -87,28 +86,30 @@ class Trajectory(object):
         self.timesteps = [] 
 
     @property
-    def atoms_trajectory(self):
+    def atoms_trajectory(self) -> list[list[int]]:
         return list(map(list, zip(*[atom.trajectory for atom in self.atoms])))
 
     @property
-    def sites_trajectory(self):
+    def sites_trajectory(self) -> list[list[list[int]]]:
         return list(map(list, zip(*[site.trajectory for site in self.sites])))
 
     def sites_trajectory_by_labels(self,
-                                   labels):
+            labels: str|list[str]) -> list[list[list[int]]]:
         if isinstance(labels, str):
             labels = [labels]
         return list(map(list, zip(*[site.trajectory for site in self.sites if site.label in labels])))
 
     @property
-    def at(self):
+    def at(self) -> list[list[int]]:
         return self.atoms_trajectory
 
     @property
-    def st(self):
+    def st(self) -> list[list[list[int]]]:
         return self.sites_trajectory
 
-    def trajectory_from_structures(self, structures, progress=False):
+    def trajectory_from_structures(self,
+        structures: list[Structure],
+        progress: bool=False) -> None:
         generator = enumerate(structures, 1)
         if progress:
             if progress=='notebook':
@@ -118,11 +119,13 @@ class Trajectory(object):
         for timestep, s in generator:
             self.append_timestep(s, t=timestep)
    
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns the "length" of a trajectory, i.e. the number of analysed timesteps."""
         return len(self.timesteps)
  
-def update_occupation(site, atom):
-    site.contains_atoms.append(atom.index)
-    atom.in_site = site.index
+def update_occupation(site: Site,
+                      atom: Atom):
+        """Assigns an atom to a particular site"""
+        site.contains_atoms.append(atom.index)
+        atom.in_site = site.index
 

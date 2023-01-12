@@ -27,7 +27,7 @@ class SphericalSite(Site):
 
     def contains_atom(self,
             atom: Atom,
-            lattice: Lattice = None,
+            lattice: Optional[Lattice] = None,
             *args: Any,
             **kwargs: Any) -> bool:
         if not lattice:
@@ -40,7 +40,7 @@ class SphericalSite(Site):
 
     def contains_point(self,
             x: np.ndarray,
-            lattice: Lattice=None,
+            lattice: Optional[Lattice] = None,
             *args: Any,
             **kwargs: Any) -> bool:
         if not lattice:

@@ -163,7 +163,7 @@ class Site(ABC):
             None
 
         """ 
-        raise NotImplementedError('centre should be implemeneted '
+        raise NotImplementedError('centre should be implemented '
                                   'in the derived class')
 
     @classmethod
@@ -180,6 +180,7 @@ class Site(ABC):
         """ 
         Site._newid = newid
 
+    @property
     def coordination_number(self) -> int:
         """Returns the coordination number of this site.
 

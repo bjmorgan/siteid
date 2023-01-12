@@ -19,19 +19,17 @@ class VoronoiSiteTestCase(unittest.TestCase):
 
     def test_as_dict(self):
         frac_coords = np.array([0.1, 0.2, 0.3])
-        site = VoronoiSite(frac_coords=frac_coords, label='foo')
+        site = VoronoiSite(frac_coords=frac_coords)
         site_dict = site.as_dict()
         np.testing.assert_array_equal(site_dict['frac_coords'], frac_coords)
-        self.assertEqual(site_dict['label'], 'foo')
    
     def test_from_dict(self):
-        site_dict = {'frac_coords': np.array([0.1, 0.2, 0.3]),
-                     'label': 'foo'}
+        site_dict = {'frac_coords': np.array([0.1, 0.2, 0.3])}
         with patch('site_analysis.site.Site.from_dict') as mock_from_dict:
-            mock_from_dict.return_value = {}
-            site = VoronoiSite.from_dict(site_dict)
-            self.assertEqual(site.label, 'foo')
-            np.testing.assert_array_equal(site.frac_coords, site_dict['frac_coords'])
+            with patch('site_analysis.site.Site.set_attributes_from_dict') as mock_set_attributes_from_dict:
+                mock_from_dict.return_value = {}
+                site = VoronoiSite.from_dict(site_dict)
+        np.testing.assert_array_equal(site.frac_coords, site_dict['frac_coords'])
 
 if __name__ == '__main__':
     unittest.main()

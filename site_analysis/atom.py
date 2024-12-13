@@ -2,6 +2,7 @@ import itertools
 import json
 from monty.io import zopen # type: ignore
 import numpy as np
+from typing import Optional, List
 
 
 class Atom(object):
@@ -9,6 +10,8 @@ class Atom(object):
 
     Attributes:
         index (int): Unique numeric index identifying this atom.
+        species_string (optional, str): Optional string used to label the species 
+                of this atom.
         in_site (int): Site index for the site this atom
             currently occupies.
         frac_coords (np.array): Numpy array containing the current fractional
@@ -21,23 +24,27 @@ class Atom(object):
         
     """
 
-    def __init__(self, index, species_string=None):
+    def __init__(self, 
+                 index: int,
+                 species_string: Optional[str] = None) -> None:
         """Initialise an Atom object.
 
         Args:
             index (int): Numerical index for this atom. Used to identify this atom
                 in analysed structures.
+            species_string (optional, `str`): Optional string used to label the species 
+                of this atom.
 
         Returns:
             None
 
         """
         self.index = index
-        self.in_site = None
-        self._frac_coords = None
-        self.trajectory = []
+        self.in_site: Optional[int] = None
+        self._frac_coords: Optional[np.ndarray] = None
+        self.trajectory: List[Optional[int]] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string representation of this atom.
 
         Args:
@@ -50,7 +57,7 @@ class Atom(object):
         string = f"Atom: {self.index}"
         return string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         string = (
             "site_analysis.Atom("
             f"index={self.index}, "
@@ -59,7 +66,7 @@ class Atom(object):
         )
         return string
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the state of this Atom.
 
         Clears the `in_site` and `trajectory` attributes.
@@ -72,7 +79,7 @@ class Atom(object):
         self._frac_coords = None
         self.trajectory = []
 
-    def assign_coords(self, structure):
+    def assign_coords(self, structure) -> None:
         """Assign fractional coordinates to this atom from a 
         pymatgen Structure.
 
